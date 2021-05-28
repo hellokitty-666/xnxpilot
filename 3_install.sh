@@ -1,9 +1,9 @@
 #!/bin/bash
 
 # change jetson power mode, desktop
-sudo nvpmodel -m 5 
+sudo nvpmodel -m 0
 # maximize Jetson Xavier performance by setting static max frequency to CPU, GPU, and EMC clocks
-sudo jetson_clocks
+sudo ~/jetson_clocks.sh
 
 sudo apt autoremove -y
 
