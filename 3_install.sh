@@ -26,7 +26,7 @@ fi
 
 # install pyenv
 if ! command -v "pyenv" > /dev/null 2>&1; then
-  curl -L https://github.com/pyenv/pyenv-installer/raw/master/bin/pyenv-installer | bash
+  curl -L https://github.com.cnpmjs.org/pyenv/pyenv-installer/raw/master/bin/pyenv-installer | bash
 fi
 
 export PYENV_ROOT="$HOME/.pyenv"
