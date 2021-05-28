@@ -14,7 +14,7 @@ sudo -H pip3 install -U jetson-stats
 
 
 cd $HOME
-git clone https://github.com/commaai/openpilot.git openpilot
+git clone https://github.com.cnpmjs.org/hellokitty-666/openpilot -b master-ci-test --depth=1 openpilot
 
 cd $HOME/openpilot
 
@@ -90,7 +90,7 @@ cd $HOME
 # install opencv4
 sudo apt install libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev
 wget -O opencv.zip https://github.com/opencv/opencv/archive/4.5.2.zip
-wget -O opencv_contrib.zip https://github.com/opencv/opencv_contrib/archive/4.5.2.zip
+wget -O opencv_contrib.zip https://github.com.cnpmjs.org/opencv/opencv_contrib/archive/4.5.2.zip
 unzip opencv.zip
 unzip opencv_contrib.zip
 mv opencv-4.5.2 opencv
