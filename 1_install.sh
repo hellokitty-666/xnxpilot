@@ -24,6 +24,7 @@ sudo apt update
 sudo apt purge -y libreoffice* thunderbird* rhythmbox* transmission* mutter* *visionworks* ubuntu-wallpapers-bionic ubuntu-desktop *theme-ubuntu* remmina branding-ubuntu light-themes lightdm gdm3 pulseaudio packagekit ibus* metacity mate-desktop-common xfwm4 matchbox-window-manager lubuntu*
 sudo apt install -y apt-utils openbox
 sudo apt purge -y deluge smplayer* onboard* snapd* vpi1* lxmusic* avahi* yelp* gnome-* vlc* nfs* ntfs* docker* python-gi samba*
+sudo apt purge -y libopencv*
 sudo apt autoremove -y && sudo apt clean -y
 sudo apt upgrade -y
 sudo apt install gir1.2-notify
