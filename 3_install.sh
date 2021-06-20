@@ -14,7 +14,7 @@ sudo -H pip3 install -U jetson-stats
 
 
 cd $HOME
-git clone https://github.com.cnpmjs.org/hellokitty-666/openpilot -b master-ci-test --depth=1 openpilot
+git clone https://github.com/dragonpilot-community/dragonpilot  --depth=1 openpilot
 
 cd $HOME/openpilot
 
@@ -58,7 +58,6 @@ eval "$(pyenv init -)"
 # **** in python env ****
 pip install --upgrade pip==20.2.4
 pip install pipenv==2020.8.13
-
 pip install setuptools
 pip install wheel
 pip install pkgconfig
@@ -88,7 +87,8 @@ pip install hexdump # for dump.py
 
 cd $HOME
 # install opencv4
-sudo apt install libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev
+sudo apt install -y libgstreamer1.0-dev
+sudo apt install -y libgstreamer-plugins-base1.0-dev
 wget -O opencv.zip https://github.com/opencv/opencv/archive/4.5.2.zip
 wget -O opencv_contrib.zip https://github.com.cnpmjs.org/opencv/opencv_contrib/archive/4.5.2.zip
 unzip opencv.zip
@@ -100,43 +100,30 @@ mkdir build
 cd build
 
 cmake -D CMAKE_BUILD_TYPE=RELEASE \
-	-D WITH_CUDA=ON \
-	-D CUDA_ARCH_PTX="" \
-	-D CUDA_ARCH_BIN="7.2" \
-  -D WITH_CUDNN=ON \
-  -D CUDNN_VERSION="8.0" \
-	-D BUILD_opencv_python3=ON \
-	-D BUILD_opencv_python2=OFF \
-	-D BUILD_opencv_java=OFF \
-	-D WITH_GSTREAMER=ON \
-	-D WITH_GTK=OFF \
-	-D BUILD_TESTS=OFF \
-	-D BUILD_PERF_TESTS=OFF \
-	-D BUILD_EXAMPLES=OFF \
-	-D BUILD_FFMPEG=ON \
-	-D OPENCV_DNN_CUDA=ON \
-	-D ENABLE_FAST_MATH=ON \
-	-D CUDA_FAST_MATH=ON \
-	-D WITH_QT=ON \
-	-D ENABLE_NEON=ON \
-	-D ENABLE_VFPV3=ON \
-	-D BUILD_TESTS=OFF \
-  -D INSTALL_PYTHON_EXAMPLES=OFF \
-  -D INSTALL_C_EXAMPLES=OFF \
-	-D OPENCV_ENABLE_NONFREE=ON \
-  -D OPENCV_GENERATE_PKGCONFIG=ON \
-  -D PYTHON_EXECUTABLE=/home/`whoami`/.pyenv/versions/3.8.5/bin/python \
-  -D PYTHON_DEFAULT_EXECUTABLE=/home/`whoami`/.pyenv/versions/3.8.5/bin/python \
-  -D PYTHON_PACKAGES_PATH=/home/`whoami`/.pyenv/versions/3.8.5/lib/python3.8/site-packages/ \
-	-D OPENCV_EXTRA_MODULES_PATH=/home/`whoami`/opencv_contrib/modules ..
+-D WITH_CUDA=ON \
+-D CUDA_ARCH_PTX="" \
+-D CUDA_ARCH_BIN="7.2" \
+-D BUILD_opencv_python3=ON \
+-D BUILD_opencv_python2=OFF \
+-D WITH_GSTREAMER=ON \
+-D BUILD_FFMPEG=ON \
+-D ENABLE_FAST_MATH=ON \
+-D CUDA_FAST_MATH=ON \
+-D WITH_QT=ON \
+-D OPENCV_ENABLE_NONFREE=ON \
+-D OPENCV_GENERATE_PKGCONFIG=ON \
+-D PYTHON_EXECUTABLE=/home/`whoami`/.pyenv/versions/3.8.5/bin/python \
+-D PYTHON_DEFAULT_EXECUTABLE=/home/`whoami`/.pyenv/versions/3.8.5/bin/python \
+-D PYTHON_PACKAGES_PATH=/home/`whoami`/.pyenv/versions/3.8.5/lib/python3.8/site-packages/ \
+-D OPENCV_EXTRA_MODULES_PATH=/home/`whoami`/opencv_contrib/modules ..
 
 make -j $(nproc)
 sudo make install
 
 #capnproto
 #install with the supplied script instead
-cd $HOME/openpilot
-sudo cereal/install_capnp.sh
+cd ~/xnxpilot
+./install_capnp.sh
 
 # instrall onnxruntime-gpu
 wget https://nvidia.box.com/shared/static/8xgbee5ghhb92i9rrcr04yymg0n3x3t0.whl -O onnxruntime_gpu-1.7.0-cp38-cp38-linux_aarch64.whl
@@ -147,4 +134,3 @@ rm -fr onnxruntime_gpu-1.7.0-cp38-cp38-linux_aarch64.whl
 sudo usermod -aG input openpilot
 
 sudo apt autoremove -y
-reboot
