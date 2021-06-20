@@ -13,8 +13,10 @@ Table of Contents
 * [Hardware preparation](#hardware-preparation)
 * [Software preparation](#software-preparation)
 * [Installation](#installation)
+* [Jetson useful links](#jetson-useful-links)
 * [Openpilot patch](#openpilot-patch)
 * [To run](#to-run)
+* [Tuning](#tuning)
 * [Credits](#credits)
 
 ---
@@ -29,9 +31,17 @@ This project is to showcase how to run openpilot on Nvidia Jetson Xavier NX with
 
 The video was recorded on commit [22cf2e6440ca004994f30b7b9e8d0c20de35c52a](https://github.com/commaai/openpilot/tree/22cf2e6440ca004994f30b7b9e8d0c20de35c52a) on 17/05/2021 (v0.8.4). 
 
+Simulation:
 <table>
   <tr>
     <td><a href="https://youtu.be/ubxSSLWqyt8" title="YouTube" rel="noopener"><img src="http://i3.ytimg.com/vi/ubxSSLWqyt8/hqdefault.jpg"></a></td>
+  </tr>
+</table>
+
+On road:
+<table>
+  <tr>
+    <td><a href="https://youtu.be/RqoTT5m4Kp8" title="YouTube" rel="noopener"><img src="http://i3.ytimg.com/vi/RqoTT5m4Kp8/hqdefault.jpg"></a></td>
   </tr>
 </table>
 
@@ -41,9 +51,9 @@ To do
 ------
 - [x] Create build scripts.
 - [x] Add patch samples/tutorials.
+- [x] On road tests.
 - [ ] Add sensor support.
 - [ ] Tuning tutorials.
-- [ ] On road tests.
 
 ---
 
@@ -63,14 +73,27 @@ Software preparation
 
 Installation
 ------
-
 1) [Install ubuntu 18.04 / Jetpack 4.5.1 on to sdcard](https://developer.nvidia.com/embedded/learn/get-started-jetson-xavier-nx-devkit)
 - While installing, use username "**openpilot**".
 2) clone this repo to your home directory (e.g. ```cd ~/ && git clone https://github.com/efinilan/xnxpilot.git```)
 3) run: ```cd ~/xnxpilot/ && ./1_install.sh``` wait for reboot.
 4) run: ```cd ~/xnxpilot/ && ./2_install.sh``` wait for reboot.
 5) run: ```cd ~/xnxpilot/ && ./3_install.sh``` wait for reboot.
-6) Completed, this should be the minimal configuration to run openpilot on Jetson.
+6) run: ```cd ~/xnxpilot/ && ./4_install.sh``` wait for reboot.
+7) Completed, this should be the minimal configuration to run openpilot on Jetson.
+
+---
+
+Jetson useful links
+------
+Here are a few useful links I found that can potentially improve Jetson performance.
+
+- [Useful tips before using Jetson Series(Nano, TX2, Xavier NX, Xavier)](https://spyjetson.blogspot.com/2019/09/jetson-nano-useful-tips-before-you.html{)
+- [Script to remove unnecessary stuffs from the Jetson to save disk space (WIP)](https://gist.github.com/adujardin/c0ee25cfb343ea5b6d17ea88ec6634ac)
+- [Scripts to help build the 4.9.201 kernel and modules onboard the Jetson Xavier NX (L4T 32.5.1, JetPack 4.5.1).](https://github.com/jetsonhacks/buildJetsonXavierNXKernel)
+- [Jetson hacks](https://www.jetsonhacks.com/)
+- [Jetson kernel customization](https://docs.nvidia.com/jetson/l4t/index.html#page/Tegra%20Linux%20Driver%20Package%20Development%20Guide/kernel_custom.html)
+
 
 ---
 
@@ -144,6 +167,67 @@ PASSIVE=0 NOSENSOR=1 USE_WEBCAM=1 ./manager.py
 ```
 
 ---
+
+
+Tuning
+------
+#### Autostart ####
+to be able to start openpilot at boot, there are a couple of process we need to do:
+
+1. make sure your user ```openpilot``` has sufficient permissions:
+```
+sudo usermod -aG video openpilot
+sudo usermod -aG root openpilot
+```
+Perhaps the quickest way is to give root privilege, edit /etc/passwd and change your user/grup id to 0, e.g.:
+```
+openpilot:x:1000:1000:openpilot,,,:/home/opnpilot:/bin/bash
+```
+and change to
+```
+openpilot:x:0:0:openpilot,,,:/home/opnpilot:/bin/bash
+```
+
+*for some unknown reasons gstreamer is unable to get video position(?) in a non-root environment.*
+
+2. Create a script to start openpilot, place this file in /home/openpilot/start_op.sh (your home folder):
+```bash
+#!/bin/bash
+cd /home/openpilot/openpilot/selfdrive/manager/
+PASSIVE=0 NOSENSOR=1 USE_WEBCAM=1 ./managaer
+```
+make sure you make it executable:
+```
+chmod +x /home/openpilot/start_op.sh
+```
+
+3. Modify ```/home/openpilot/.bashrc``` to use tmux:
+at the end of the file, make sure you have these:
+```bash
+export PYENV_ROOT="/home/openpilot/.pyenv"
+export PATH="/home/openpilot/.pyenv/bin:/home/openpilot/.pyenv/shims:/home/openpilot/.pyenv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin"
+source /home/openpilot/openpilot/tools/openpilot_env.sh
+cd /home/openpilot/openpilot
+TMUX_SESSION="openpilot"
+tmux has-session -t ${TMUX_SESSION} 2>/dev/null
+if [ $? != 0 ]; then
+  tmux new-session -s ${TMUX_SESSION} -n bash -d
+  tmux send-keys -t ${TMUX_SESSION}:0 'bash /home/openpilot/start_op.sh' C-m
+fi
+
+tmux attach-session -t ${TMUX_SESSION}
+```
+
+*the first 2~3 line should already be in your .bashrc file (something similar)*
+
+4. (Optional) Modify ```/home/openpilot/.config/lxsession/LXDE/autostart``` to start a lxterminal after you boot up.
+add the line below at the end of the file:
+```
+@lxterminal
+```
+
+so now once you logged into one of your terminal/console, it should run openpilot on your first tmux session just like openpilot on EON/C2.
+
 
 Credits
 ------
