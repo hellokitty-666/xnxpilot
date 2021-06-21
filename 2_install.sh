@@ -17,7 +17,7 @@ sudo apt-get install -y libcapnp-dev
 sudo apt-get install -y cmake
 sudo apt-get install -y curl
 sudo apt-get install -y ffmpeg
-sudo apt-get install -y git \
+sudo apt-get install -y git
 sudo apt-get install -y libavformat-dev 
 sudo apt-get install -y libavcodec-dev 
 sudo apt-get install -y libavdevice-dev 
